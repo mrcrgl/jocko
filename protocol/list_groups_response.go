@@ -5,7 +5,7 @@ type ListGroupsResponse struct {
 	Groups    map[string]string
 }
 
-func (r *ListGroupsResponse) Encode(e PacketEncoder) error {
+func (r *ListGroupsResponse) Encode(e PacketEncoder, _ int16) error {
 	e.PutInt16(r.ErrorCode)
 	if err := e.PutArrayLength(len(r.Groups)); err != nil {
 		return err
@@ -21,7 +21,7 @@ func (r *ListGroupsResponse) Encode(e PacketEncoder) error {
 	return nil
 }
 
-func (r *ListGroupsResponse) Decode(d PacketDecoder) (err error) {
+func (r *ListGroupsResponse) Decode(d PacketDecoder, _ int16) (err error) {
 	if r.ErrorCode, err = d.Int16(); err != nil {
 		return err
 	}

@@ -7,11 +7,11 @@ type MessageSet struct {
 	PartialTrailingMessages bool
 }
 
-func (ms *MessageSet) Encode(e PacketEncoder) error {
+func (ms *MessageSet) Encode(e PacketEncoder, version int16) error {
 	e.PutInt64(ms.Offset)
 	e.Push(&SizeField{})
 	for _, m := range ms.Messages {
-		if err := m.Encode(e); err != nil {
+		if err := m.Encode(e, version); err != nil {
 			return err
 		}
 	}
@@ -19,7 +19,7 @@ func (ms *MessageSet) Encode(e PacketEncoder) error {
 	return nil
 }
 
-func (ms *MessageSet) Decode(d PacketDecoder) error {
+func (ms *MessageSet) Decode(d PacketDecoder, version int16) error {
 	var err error
 	if ms.Offset, err = d.Int64(); err != nil {
 		return err
@@ -29,7 +29,7 @@ func (ms *MessageSet) Decode(d PacketDecoder) error {
 	}
 	for d.remaining() > 0 {
 		m := new(Message)
-		err = m.Decode(d)
+		err = m.Decode(d, version)
 		switch err {
 		case nil:
 			ms.Messages = append(ms.Messages, m)

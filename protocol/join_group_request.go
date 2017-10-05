@@ -6,19 +6,23 @@ type GroupProtocol struct {
 }
 
 type JoinGroupRequest struct {
-	GroupID        string
-	SessionTimeout int32
-	MemberID       string
-	ProtocolType   string
-	GroupProtocols []*GroupProtocol
+	GroupID          string
+	SessionTimeout   int32
+	RebalanceTimeout int32
+	MemberID         string
+	ProtocolType     string
+	GroupProtocols   []*GroupProtocol
 }
 
-func (r *JoinGroupRequest) Encode(e PacketEncoder) error {
+func (r *JoinGroupRequest) Encode(e PacketEncoder, version int16) error {
 	var err error
 	if err = e.PutString(r.GroupID); err != nil {
 		return err
 	}
 	e.PutInt32(r.SessionTimeout)
+	if version == 1 {
+		e.PutInt32(r.RebalanceTimeout)
+	}
 	if err = e.PutString(r.MemberID); err != nil {
 		return err
 	}
@@ -36,13 +40,18 @@ func (r *JoinGroupRequest) Encode(e PacketEncoder) error {
 	return nil
 }
 
-func (r *JoinGroupRequest) Decode(d PacketDecoder) error {
+func (r *JoinGroupRequest) Decode(d PacketDecoder, version int16) error {
 	var err error
 	if r.GroupID, err = d.String(); err != nil {
 		return err
 	}
 	if r.SessionTimeout, err = d.Int32(); err != nil {
 		return err
+	}
+	if version == 1 {
+		if r.RebalanceTimeout, err = d.Int32(); err != nil {
+			return err
+		}
 	}
 	if r.MemberID, err = d.String(); err != nil {
 		return err

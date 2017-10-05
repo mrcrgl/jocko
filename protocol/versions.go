@@ -4,12 +4,12 @@ package protocol
 
 const (
 	ProduceMaxVersion = 2
-	ProduceMinVersion = 2
+	ProduceMinVersion = 0
 
 	FetchMaxVersion = 1
-	FetchMinVersion = 1
+	FetchMinVersion = 0
 
-	OffsetsMaxVersion = 0
+	OffsetsMaxVersion = 1
 	OffsetsMinVersion = 0
 
 	MetadataMaxVersion = 0
@@ -37,7 +37,7 @@ const (
 	GroupCoordinatorMaxVersion = 0
 	GroupCoordinatorMinVersion = 0
 
-	JoinGroupMaxVersion = 0
+	JoinGroupMaxVersion = 1
 	JoinGroupMinVersion = 0
 
 	HeartbeatMaxVersion = 0
@@ -67,3 +67,21 @@ const (
 	DeleteTopicsMaxVersion = 0
 	DeleteTopicsMinVersion = 0
 )
+
+func supportVersion(version int16) (version1, version2, version3 bool) {
+	switch version {
+	case 0:
+		break
+	case 1:
+		version1 = true
+		break
+	case 2:
+		version2 = true
+		break
+	case 3:
+		version3 = true
+		break
+	}
+
+	return
+}

@@ -14,7 +14,7 @@ type JoinGroupResponse struct {
 	Members       map[string][]byte
 }
 
-func (r *JoinGroupResponse) Encode(e PacketEncoder) error {
+func (r *JoinGroupResponse) Encode(e PacketEncoder, _ int16) error {
 	var err error
 	e.PutInt16(r.ErrorCode)
 	e.PutInt32(r.GenerationID)
@@ -38,7 +38,7 @@ func (r *JoinGroupResponse) Encode(e PacketEncoder) error {
 	return nil
 }
 
-func (r *JoinGroupResponse) Decode(d PacketDecoder) error {
+func (r *JoinGroupResponse) Decode(d PacketDecoder, _ int16) error {
 	var err error
 	if r.ErrorCode, err = d.Int16(); err != nil {
 		return err

@@ -19,7 +19,7 @@ type FetchRequest struct {
 	Topics      []*FetchTopic
 }
 
-func (r *FetchRequest) Encode(e PacketEncoder) error {
+func (r *FetchRequest) Encode(e PacketEncoder, _ int16) error {
 	if r.ReplicaID == 0 {
 		e.PutInt32(-1) // replica ID is -1 for clients
 	} else {
@@ -27,7 +27,6 @@ func (r *FetchRequest) Encode(e PacketEncoder) error {
 	}
 	e.PutInt32(r.MaxWaitTime)
 	e.PutInt32(r.MinBytes)
-	// e.PutInt32(r.MaxBytes)
 	e.PutArrayLength(len(r.Topics))
 	for _, t := range r.Topics {
 		e.PutString(t.Topic)
@@ -102,6 +101,10 @@ func (r *FetchRequest) Decode(d PacketDecoder, version int16) error {
 
 func (r *FetchRequest) Key() int16 {
 	return FetchKey
+}
+
+func (r *FetchRequest) Version() int16 {
+	return 0
 }
 
 func (r *FetchRequest) MinVersion() int16 {

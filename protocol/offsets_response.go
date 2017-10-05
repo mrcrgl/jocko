@@ -3,7 +3,7 @@ package protocol
 type PartitionResponse struct {
 	Partition int32
 	ErrorCode int16
-	// Timestamp int64
+	Timestamp int64
 	Offsets []int64
 }
 
@@ -16,7 +16,7 @@ type OffsetsResponse struct {
 	Responses []*OffsetResponse
 }
 
-func (r *OffsetsResponse) Encode(e PacketEncoder) error {
+func (r *OffsetsResponse) Encode(e PacketEncoder, version int16) error {
 	e.PutArrayLength(len(r.Responses))
 	for _, r := range r.Responses {
 		e.PutString(r.Topic)
@@ -24,15 +24,16 @@ func (r *OffsetsResponse) Encode(e PacketEncoder) error {
 		for _, p := range r.PartitionResponses {
 			e.PutInt32(p.Partition)
 			e.PutInt16(p.ErrorCode)
-			// e.PutInt64(p.Timestamp)
+			if version == 1 {
+				e.PutInt64(p.Timestamp)
+			}
 			e.PutInt64Array(p.Offsets)
-			// e.PutInt64(p.Offset)
 		}
 	}
 	return nil
 }
 
-func (r *OffsetsResponse) Decode(d PacketDecoder) error {
+func (r *OffsetsResponse) Decode(d PacketDecoder, version int16) error {
 	var err error
 	l, err := d.ArrayLength()
 	if err != nil {
@@ -61,17 +62,18 @@ func (r *OffsetsResponse) Decode(d PacketDecoder) error {
 			if err != nil {
 				return err
 			}
-			// v1:
-			// p.Timestamp, err = d.Int64()
-			// if err != nil {
-			// 	return err
-			// }
+			if version == 1 {
+				p.Timestamp, err = d.Int64()
+				if err != nil {
+					return err
+				}
+			}
+
 			p.Offsets, err = d.Int64Array()
-			// v1:
-			// p.Offset, err = d.Int64()
+			/*p.Offset, err = d.Int64()
 			if err != nil {
 				return err
-			}
+			}*/
 			ps[j] = p
 		}
 		resp.PartitionResponses = ps

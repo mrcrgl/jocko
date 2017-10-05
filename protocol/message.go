@@ -9,11 +9,11 @@ type Message struct {
 	MagicByte int8
 }
 
-func (m *Message) Encode(e PacketEncoder) error {
+func (m *Message) Encode(e PacketEncoder, version int16) error {
 	e.Push(&CRCField{})
 	e.PutInt8(m.MagicByte)
 	e.PutInt8(0) // attributes
-	if m.MagicByte > 0 {
+	if version == 1 && m.MagicByte > 0 {
 		e.PutInt64(m.Timestamp.UnixNano() / int64(time.Millisecond))
 	}
 	if err := e.PutBytes(m.Key); err != nil {
@@ -26,7 +26,7 @@ func (m *Message) Encode(e PacketEncoder) error {
 	return nil
 }
 
-func (m *Message) Decode(d PacketDecoder) error {
+func (m *Message) Decode(d PacketDecoder, version int16) error {
 	var err error
 	if err = d.Push(&CRCField{}); err != nil {
 		return err
@@ -37,7 +37,7 @@ func (m *Message) Decode(d PacketDecoder) error {
 	if _, err := d.Int8(); err != nil {
 		return err
 	}
-	if m.MagicByte > 0 {
+	if version == 1 && m.MagicByte > 0 {
 		t, err := d.Int64()
 		if err != nil {
 			return err

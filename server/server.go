@@ -143,25 +143,25 @@ func (s *Server) handleRequest(conn net.Conn) {
 			}
 		case protocol.ProduceKey:
 			req := &protocol.ProduceRequest{}
-			s.decode(header, req, d)
+			s.decodeVersioned(header, req, d)
 			if err = s.handleProduce(conn, header, req); err != nil {
 				s.logger.Info("produce failed: %s", err)
 			}
 		case protocol.FetchKey:
 			req := &protocol.FetchRequest{}
-			s.decode(header, req, d)
+			s.decodeVersioned(header, req, d)
 			if err = s.handleFetch(conn, header, req); err != nil {
 				s.logger.Info("fetch failed: %s", err)
 			}
 		case protocol.OffsetsKey:
 			req := &protocol.OffsetsRequest{}
-			s.decode(header, req, d)
+			s.decodeVersioned(header, req, d)
 			if err = s.handleOffsets(conn, header, req); err != nil {
 				s.logger.Info("offsets failed: %s", err)
 			}
 		case protocol.MetadataKey:
 			req := &protocol.MetadataRequest{}
-			s.decode(header, req, d)
+			s.decodeVersioned(header, req, d)
 			if err = s.handleMetadata(conn, header, req); err != nil {
 				s.logger.Info("metadata request failed: %s", err)
 			}
@@ -179,7 +179,7 @@ func (s *Server) handleRequest(conn net.Conn) {
 			}
 		case protocol.LeaderAndISRKey:
 			req := &protocol.LeaderAndISRRequest{}
-			s.decode(header, req, d)
+			s.decodeVersioned(header, req, d)
 			if err = s.handleLeaderAndISR(conn, header, req); err != nil {
 				s.logger.Info("handle leader and ISR failed: %s", err)
 			}
@@ -187,7 +187,15 @@ func (s *Server) handleRequest(conn net.Conn) {
 	}
 }
 
-func (s *Server) decode(header *protocol.RequestHeader, req protocol.VersionedDecoder, d protocol.PacketDecoder) error {
+func (s *Server) decode(header *protocol.RequestHeader, req protocol.Decoder, d protocol.PacketDecoder) error {
+	err := req.Decode(d, header.APIVersion)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Server) decodeVersioned(header *protocol.RequestHeader, req protocol.Decoder, d protocol.PacketDecoder) error {
 	err := req.Decode(d, header.APIVersion)
 	if err != nil {
 		return err
@@ -413,7 +421,7 @@ func (s *Server) handleMetadata(conn net.Conn, header *protocol.RequestHeader, r
 
 func (s *Server) write(conn net.Conn, header *protocol.RequestHeader, e protocol.Encoder) error {
 	s.logger.Debug("response: correlation id [%d], key [%d]", header.CorrelationID, header.APIKey)
-	b, err := protocol.Encode(e)
+	b, err := protocol.EncodeVersioned(e, header.APIVersion)
 	if err != nil {
 		return err
 	}

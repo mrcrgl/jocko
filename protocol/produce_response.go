@@ -17,7 +17,8 @@ type ProduceResponses struct {
 	ThrottleTimeMs int32
 }
 
-func (r *ProduceResponses) Encode(e PacketEncoder) error {
+func (r *ProduceResponses) Encode(e PacketEncoder, version int16) error {
+	v1, v2, _ := supportVersion(version)
 	e.PutArrayLength(len(r.Responses))
 	for _, r := range r.Responses {
 		e.PutString(r.Topic)
@@ -26,14 +27,19 @@ func (r *ProduceResponses) Encode(e PacketEncoder) error {
 			e.PutInt32(p.Partition)
 			e.PutInt16(p.ErrorCode)
 			e.PutInt64(p.BaseOffset)
-			e.PutInt64(p.Timestamp)
+			if v2 {
+				e.PutInt64(p.Timestamp)
+			}
 		}
 	}
-	e.PutInt32(r.ThrottleTimeMs)
+	if v1 {
+		e.PutInt32(r.ThrottleTimeMs)
+	}
 	return nil
 }
 
-func (r *ProduceResponses) Decode(d PacketDecoder) error {
+func (r *ProduceResponses) Decode(d PacketDecoder, version int16) error {
+	v1, v2, _ := supportVersion(version)
 	var err error
 	l, err := d.ArrayLength()
 	if err != nil {
@@ -68,16 +74,21 @@ func (r *ProduceResponses) Decode(d PacketDecoder) error {
 			if err != nil {
 				return err
 			}
-			p.Timestamp, err = d.Int64()
-			if err != nil {
-				return err
+			if v2 {
+				p.Timestamp, err = d.Int64()
+				if err != nil {
+					return err
+				}
 			}
+
 		}
 		resp.PartitionResponses = ps
 	}
-	r.ThrottleTimeMs, err = d.Int32()
-	if err != nil {
-		return err
+	if v1 {
+		r.ThrottleTimeMs, err = d.Int32()
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

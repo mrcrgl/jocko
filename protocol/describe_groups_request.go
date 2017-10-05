@@ -4,11 +4,11 @@ type DescribeGroupsRequest struct {
 	GroupIDs []string
 }
 
-func (r *DescribeGroupsRequest) Encode(e PacketEncoder) error {
+func (r *DescribeGroupsRequest) Encode(e PacketEncoder, _ int16) error {
 	return e.PutStringArray(r.GroupIDs)
 }
 
-func (r *DescribeGroupsRequest) Decode(d PacketDecoder) (err error) {
+func (r *DescribeGroupsRequest) Decode(d PacketDecoder, _ int16) (err error) {
 	r.GroupIDs, err = d.StringArray()
 	return err
 }

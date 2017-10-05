@@ -2,11 +2,11 @@ package protocol
 
 type APIVersionsRequest struct{}
 
-func (c *APIVersionsRequest) Encode(_ PacketEncoder) error {
+func (c *APIVersionsRequest) Encode(_ PacketEncoder, _ int16) error {
 	return nil
 }
 
-func (c *APIVersionsRequest) Decode(_ PacketDecoder) error {
+func (c *APIVersionsRequest) Decode(_ PacketDecoder, _ int16) error {
 	return nil
 }
 

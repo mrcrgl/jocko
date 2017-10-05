@@ -6,7 +6,7 @@ type HeartbeatRequest struct {
 	MemberID          string
 }
 
-func (r *HeartbeatRequest) encode(e PacketEncoder) error {
+func (r *HeartbeatRequest) encode(e PacketEncoder, _ int16) error {
 	if err := e.PutString(r.GroupID); err != nil {
 		return err
 	}
@@ -17,7 +17,7 @@ func (r *HeartbeatRequest) encode(e PacketEncoder) error {
 	return nil
 }
 
-func (r *HeartbeatRequest) Decode(d PacketDecoder) (err error) {
+func (r *HeartbeatRequest) Decode(d PacketDecoder, _ int16) (err error) {
 	if r.GroupID, err = d.String(); err != nil {
 		return
 	}

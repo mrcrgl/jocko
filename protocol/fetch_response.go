@@ -17,8 +17,10 @@ type FetchResponses struct {
 	Responses      []*FetchResponse
 }
 
-func (r *FetchResponses) Encode(e PacketEncoder) (err error) {
-	e.PutInt32(r.ThrottleTimeMs)
+func (r *FetchResponses) Encode(e PacketEncoder, version int16) (err error) {
+	if version >= 1 {
+		e.PutInt32(r.ThrottleTimeMs)
+	}
 	if err = e.PutArrayLength(len(r.Responses)); err != nil {
 		return err
 	}
@@ -41,11 +43,14 @@ func (r *FetchResponses) Encode(e PacketEncoder) (err error) {
 	return nil
 }
 
-func (r *FetchResponses) Decode(d PacketDecoder) error {
+func (r *FetchResponses) Decode(d PacketDecoder, version int16) error {
 	var err error
-	r.ThrottleTimeMs, err = d.Int32()
-	if err != nil {
-		return err
+
+	if version >= 1 {
+		r.ThrottleTimeMs, err = d.Int32()
+		if err != nil {
+			return err
+		}
 	}
 	responseCount, err := d.ArrayLength()
 	r.Responses = make([]*FetchResponse, responseCount)

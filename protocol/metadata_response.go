@@ -28,7 +28,7 @@ type MetadataResponse struct {
 	TopicMetadata []*TopicMetadata
 }
 
-func (r *MetadataResponse) Encode(e PacketEncoder) (err error) {
+func (r *MetadataResponse) Encode(e PacketEncoder, _ int16) (err error) {
 	if err = e.PutArrayLength(len(r.Brokers)); err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (r *MetadataResponse) Encode(e PacketEncoder) (err error) {
 	return nil
 }
 
-func (r *MetadataResponse) Decode(d PacketDecoder) error {
+func (r *MetadataResponse) Decode(d PacketDecoder, _ int16) error {
 	brokerCount, err := d.ArrayLength()
 	r.Brokers = make([]*Broker, brokerCount)
 	for i := range r.Brokers {

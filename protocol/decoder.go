@@ -27,11 +27,11 @@ type PacketDecoder interface {
 	remaining() int
 }
 
-type Decoder interface {
+type UnversionedDecoder interface {
 	Decode(d PacketDecoder) error
 }
 
-type VersionedDecoder interface {
+type Decoder interface {
 	Decode(d PacketDecoder, version int16) error
 }
 
@@ -41,14 +41,14 @@ type PushDecoder interface {
 	Fill(curOffset int, buf []byte) error
 }
 
-func Decode(b []byte, in Decoder) error {
-	d := NewDecoder(b)
-	return in.Decode(d)
-}
-
-func VersionedDecode(b []byte, in VersionedDecoder, version int16) error {
+func Decode(b []byte, in Decoder, version int16) error {
 	d := NewDecoder(b)
 	return in.Decode(d, version)
+}
+
+func UnversionedDecode(b []byte, in UnversionedDecoder) error {
+	d := NewDecoder(b)
+	return in.Decode(d)
 }
 
 type ByteDecoder struct {

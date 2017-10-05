@@ -24,7 +24,7 @@ type LeaderAndISRRequest struct {
 	LiveLeaders     []*LiveLeader
 }
 
-func (r *LeaderAndISRRequest) Encode(e PacketEncoder) error {
+func (r *LeaderAndISRRequest) Encode(e PacketEncoder, _ int16) error {
 	var err error
 	e.PutInt32(r.ControllerID)
 	e.PutInt32(r.ControllerEpoch)
@@ -47,7 +47,7 @@ func (r *LeaderAndISRRequest) Encode(e PacketEncoder) error {
 	return nil
 }
 
-func (r *LeaderAndISRRequest) Decode(d PacketDecoder) error {
+func (r *LeaderAndISRRequest) Decode(d PacketDecoder, _ int16) error {
 	var err error
 	if r.ControllerID, err = d.Int32(); err != nil {
 		return err

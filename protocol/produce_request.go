@@ -16,7 +16,7 @@ type ProduceRequest struct {
 	TopicData []*TopicData
 }
 
-func (r *ProduceRequest) Encode(e PacketEncoder) (err error) {
+func (r *ProduceRequest) Encode(e PacketEncoder, _ int16) (err error) {
 	e.PutInt16(r.Acks)
 	e.PutInt32(r.Timeout)
 	if err = e.PutArrayLength(len(r.TopicData)); err != nil {
@@ -39,7 +39,7 @@ func (r *ProduceRequest) Encode(e PacketEncoder) (err error) {
 	return nil
 }
 
-func (r *ProduceRequest) Decode(d PacketDecoder) (err error) {
+func (r *ProduceRequest) Decode(d PacketDecoder, _ int16) (err error) {
 	r.Acks, err = d.Int16()
 	if err != nil {
 		return err

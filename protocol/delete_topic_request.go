@@ -5,7 +5,7 @@ type DeleteTopicsRequest struct {
 	Timeout int32
 }
 
-func (c *DeleteTopicsRequest) Encode(e PacketEncoder) (err error) {
+func (c *DeleteTopicsRequest) Encode(e PacketEncoder, _ int16) (err error) {
 	if err = e.PutStringArray(c.Topics); err != nil {
 		return err
 	}
@@ -13,7 +13,7 @@ func (c *DeleteTopicsRequest) Encode(e PacketEncoder) (err error) {
 	return nil
 }
 
-func (c *DeleteTopicsRequest) Decode(d PacketDecoder) (err error) {
+func (c *DeleteTopicsRequest) Decode(d PacketDecoder, _ int16) (err error) {
 	c.Topics, err = d.StringArray()
 	if err != nil {
 		return err

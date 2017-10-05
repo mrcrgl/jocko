@@ -11,7 +11,7 @@ type LeaderAndISRResponse struct {
 	Partitions []*LeaderAndISRPartition
 }
 
-func (r *LeaderAndISRResponse) Encode(e PacketEncoder) error {
+func (r *LeaderAndISRResponse) Encode(e PacketEncoder, _ int16) error {
 	var err error
 	e.PutInt16(r.ErrorCode)
 	for _, p := range r.Partitions {
@@ -24,7 +24,7 @@ func (r *LeaderAndISRResponse) Encode(e PacketEncoder) error {
 	return nil
 }
 
-func (r *LeaderAndISRResponse) Decode(d PacketDecoder) error {
+func (r *LeaderAndISRResponse) Decode(d PacketDecoder, _ int16) error {
 	var err error
 	if r.ErrorCode, err = d.Int16(); err != nil {
 		return err

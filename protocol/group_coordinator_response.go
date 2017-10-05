@@ -11,7 +11,7 @@ type GroupCoordinatorResponse struct {
 	Coordinator *Coordinator
 }
 
-func (r *GroupCoordinatorResponse) Encode(e PacketEncoder) error {
+func (r *GroupCoordinatorResponse) Encode(e PacketEncoder, _ int16) error {
 	e.PutInt16(r.ErrorCode)
 	e.PutInt32(r.Coordinator.NodeID)
 	if err := e.PutString(r.Coordinator.Host); err != nil {
@@ -21,7 +21,7 @@ func (r *GroupCoordinatorResponse) Encode(e PacketEncoder) error {
 	return nil
 }
 
-func (r *GroupCoordinatorResponse) Decode(d PacketDecoder) (err error) {
+func (r *GroupCoordinatorResponse) Decode(d PacketDecoder, _ int16) (err error) {
 	if r.ErrorCode, err = d.Int16(); err != nil {
 		return err
 	}

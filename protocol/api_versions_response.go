@@ -11,7 +11,7 @@ type APIVersion struct {
 	MaxVersion int16
 }
 
-func (c *APIVersionsResponse) Encode(e PacketEncoder) error {
+func (c *APIVersionsResponse) Encode(e PacketEncoder, _ int16) error {
 	e.PutInt16(c.ErrorCode)
 
 	if err := e.PutArrayLength(len(c.APIVersions)); err != nil {
@@ -25,7 +25,7 @@ func (c *APIVersionsResponse) Encode(e PacketEncoder) error {
 	return nil
 }
 
-func (c *APIVersionsResponse) Decode(d PacketDecoder) error {
+func (c *APIVersionsResponse) Decode(d PacketDecoder, _ int16) error {
 	l, err := d.ArrayLength()
 	if err != nil {
 		return err

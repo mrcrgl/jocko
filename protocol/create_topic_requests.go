@@ -13,7 +13,7 @@ type CreateTopicRequests struct {
 	Timeout  int32
 }
 
-func (c *CreateTopicRequests) Encode(e PacketEncoder) error {
+func (c *CreateTopicRequests) Encode(e PacketEncoder, _ int16) error {
 	e.PutArrayLength(len(c.Requests))
 	for _, r := range c.Requests {
 		e.PutString(r.Topic)
@@ -36,7 +36,7 @@ func (c *CreateTopicRequests) Encode(e PacketEncoder) error {
 	return nil
 }
 
-func (c *CreateTopicRequests) Decode(d PacketDecoder) error {
+func (c *CreateTopicRequests) Decode(d PacketDecoder, _ int16) error {
 	var err error
 	requestCount, err := d.ArrayLength()
 	if err != nil {

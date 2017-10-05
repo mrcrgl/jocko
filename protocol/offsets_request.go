@@ -16,7 +16,7 @@ type OffsetsRequest struct {
 	MaxNumOffsets int32
 }
 
-func (r *OffsetsRequest) Encode(e PacketEncoder) error {
+func (r *OffsetsRequest) Encode(e PacketEncoder, version int16) error {
 	var err error
 	e.PutInt32(-1)
 	err = e.PutArrayLength(len(r.Topics))
@@ -37,11 +37,13 @@ func (r *OffsetsRequest) Encode(e PacketEncoder) error {
 			e.PutInt64(p.Timestamp)
 		}
 	}
-	e.PutInt32(r.MaxNumOffsets)
+	if version == 0 {
+		e.PutInt32(r.MaxNumOffsets)
+	}
 	return nil
 }
 
-func (r *OffsetsRequest) Decode(d PacketDecoder) error {
+func (r *OffsetsRequest) Decode(d PacketDecoder, version int16) error {
 	var err error
 	r.ReplicaID, err = d.Int32()
 	if err != nil {
@@ -77,7 +79,9 @@ func (r *OffsetsRequest) Decode(d PacketDecoder) error {
 		}
 		r.Topics[i] = ot
 	}
-	r.MaxNumOffsets, err = d.Int32()
+	if version == 0 {
+		r.MaxNumOffsets, err = d.Int32()
+	}
 	return err
 }
 

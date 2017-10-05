@@ -22,8 +22,8 @@ func NewClient(conn io.ReadWriter) *Client {
 
 // makeRequest sends request req to server.
 // Server response is given to decoder to decode it as per request expectations
-func (p *Client) makeRequest(req *protocol.Request, decoder protocol.Decoder) error {
-	b, err := protocol.Encode(req)
+func (p *Client) makeRequest(req *protocol.Request, version int16, decoder protocol.Decoder) error {
+	b, err := protocol.Encode(req, version)
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func (p *Client) makeRequest(req *protocol.Request, decoder protocol.Decoder) er
 		return err
 	}
 	var header protocol.Response
-	if err = protocol.Decode(br.Bytes(), &header); err != nil {
+	if err = protocol.Decode(br.Bytes(), &header, version); err != nil {
 		return err
 	}
 	c := make([]byte, 0, header.Size-4)
@@ -43,7 +43,7 @@ func (p *Client) makeRequest(req *protocol.Request, decoder protocol.Decoder) er
 	if _, err = io.CopyN(buffer, p.conn, int64(header.Size-4)); err != nil {
 		return err
 	}
-	if err = protocol.Decode(buffer.Bytes(), decoder); err != nil {
+	if err = protocol.Decode(buffer.Bytes(), decoder, version); err != nil {
 		return err
 	}
 	return nil
@@ -57,7 +57,7 @@ func (p *Client) FetchMessages(clientID string, fetchRequest *protocol.FetchRequ
 		Body:          fetchRequest,
 	}
 	fetchResponse := new(protocol.FetchResponses)
-	if err := p.makeRequest(req, fetchResponse); err != nil {
+	if err := p.makeRequest(req, protocol.FetchMaxVersion, fetchResponse); err != nil {
 		return nil, err
 	}
 	return fetchResponse, nil
@@ -74,7 +74,7 @@ func (p *Client) CreateTopic(clientID string, createRequest *protocol.CreateTopi
 		Body:          body,
 	}
 	createResponse := new(protocol.CreateTopicsResponse)
-	if err := p.makeRequest(req, createResponse); err != nil {
+	if err := p.makeRequest(req, protocol.CreateTopicsMaxVersion, createResponse); err != nil {
 		return nil, err
 	}
 	return createResponse, nil

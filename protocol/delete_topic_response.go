@@ -4,7 +4,7 @@ type DeleteTopicsResponse struct {
 	TopicErrorCodes []*TopicErrorCode
 }
 
-func (c *DeleteTopicsResponse) Encode(e PacketEncoder) error {
+func (c *DeleteTopicsResponse) Encode(e PacketEncoder, _ int16) error {
 	e.PutArrayLength(len(c.TopicErrorCodes))
 	for _, t := range c.TopicErrorCodes {
 		e.PutString(t.Topic)
@@ -13,7 +13,7 @@ func (c *DeleteTopicsResponse) Encode(e PacketEncoder) error {
 	return nil
 }
 
-func (c *DeleteTopicsResponse) Decode(d PacketDecoder) error {
+func (c *DeleteTopicsResponse) Decode(d PacketDecoder, _ int16) error {
 	l, err := d.ArrayLength()
 	if err != nil {
 		return err

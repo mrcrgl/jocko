@@ -4,7 +4,7 @@ type DescribeGroupsResponse struct {
 	Groups []*Group
 }
 
-func (r *DescribeGroupsResponse) Encode(e PacketEncoder) error {
+func (r *DescribeGroupsResponse) Encode(e PacketEncoder, _ int16) error {
 	if err := e.PutArrayLength(len(r.Groups)); err != nil {
 		return err
 	}
@@ -16,7 +16,7 @@ func (r *DescribeGroupsResponse) Encode(e PacketEncoder) error {
 	return nil
 }
 
-func (r *DescribeGroupsResponse) Decode(d PacketDecoder) (err error) {
+func (r *DescribeGroupsResponse) Decode(d PacketDecoder, _ int16) (err error) {
 	groupCount, err := d.ArrayLength()
 	r.Groups = make([]*Group, groupCount)
 	for i := 0; i < groupCount; i++ {
@@ -29,7 +29,7 @@ func (r *DescribeGroupsResponse) Decode(d PacketDecoder) (err error) {
 }
 
 func (r *DescribeGroupsResponse) Key() int16 {
-	return 15
+	return DescribeGroupsKey
 }
 
 func (r *DescribeGroupsResponse) Version() int16 {

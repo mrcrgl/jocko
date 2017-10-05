@@ -12,7 +12,7 @@ type Request struct {
 	Body          Body
 }
 
-func (r *Request) Encode(pe PacketEncoder) (err error) {
+func (r *Request) Encode(pe PacketEncoder, version int16) (err error) {
 	pe.Push(&SizeField{})
 	pe.PutInt16(r.Body.Key())
 	pe.PutInt16(r.Body.Version())
@@ -21,7 +21,7 @@ func (r *Request) Encode(pe PacketEncoder) (err error) {
 	if err != nil {
 		return err
 	}
-	r.Body.Encode(pe)
+	r.Body.Encode(pe, version)
 	pe.Pop()
 	return nil
 }

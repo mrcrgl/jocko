@@ -26,19 +26,36 @@ type PushEncoder interface {
 }
 
 type Encoder interface {
-	Encode(e PacketEncoder) error
+	Encode(e PacketEncoder, version int16) error
 }
 
-func Encode(e Encoder) ([]byte, error) {
+func Encode(e Encoder, version int16) ([]byte, error) {
 	lenEnc := new(LenEncoder)
-	err := e.Encode(lenEnc)
+	err := e.Encode(lenEnc, version)
 	if err != nil {
 		return nil, err
 	}
 
 	b := make([]byte, lenEnc.Length)
 	byteEnc := NewByteEncoder(b)
-	err = e.Encode(byteEnc)
+	err = e.Encode(byteEnc, version)
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
+
+func EncodeVersioned(e Encoder, version int16) ([]byte, error) {
+	lenEnc := new(LenEncoder)
+	err := e.Encode(lenEnc, version)
+	if err != nil {
+		return nil, err
+	}
+
+	b := make([]byte, lenEnc.Length)
+	byteEnc := NewByteEncoder(b)
+	err = e.Encode(byteEnc, version)
 	if err != nil {
 		return nil, err
 	}

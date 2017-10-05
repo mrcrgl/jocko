@@ -5,14 +5,14 @@ type LeaveGroupRequest struct {
 	MemberID string
 }
 
-func (r *LeaveGroupRequest) Encode(e PacketEncoder) error {
+func (r *LeaveGroupRequest) Encode(e PacketEncoder, _ int16) error {
 	if err := e.PutString(r.GroupID); err != nil {
 		return err
 	}
 	return e.PutString(r.MemberID)
 }
 
-func (r *LeaveGroupRequest) Decode(d PacketDecoder) (err error) {
+func (r *LeaveGroupRequest) Decode(d PacketDecoder, _ int16) (err error) {
 	if r.GroupID, err = d.String(); err != nil {
 		return err
 	}
