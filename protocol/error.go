@@ -62,6 +62,8 @@ var (
 	ErrOperationNotAttempted              = Error{code: 55, msg: "operation not attempted"}
 )
 
+
+
 // Error represents a protocol err. It makes it so the errors can have their
 // error code and description too.
 type Error struct {

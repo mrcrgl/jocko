@@ -13,6 +13,11 @@ type RequestHeader struct {
 	ClientID string
 }
 
+type APIKeyVersion struct {
+	Version int16
+	Key     int16
+}
+
 func (r *RequestHeader) Encode(e PacketEncoder) {
 	e.PutInt32(r.Size)
 	e.PutInt16(r.APIKey)
@@ -41,4 +46,11 @@ func (r *RequestHeader) Decode(d PacketDecoder) error {
 	}
 	r.ClientID, err = d.String()
 	return err
+}
+
+func (r *RequestHeader) KeyVersion() APIKeyVersion {
+	return APIKeyVersion{
+		Version: r.APIVersion,
+		Key:     r.APIKey,
+	}
 }

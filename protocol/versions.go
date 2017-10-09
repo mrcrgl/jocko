@@ -67,21 +67,3 @@ const (
 	DeleteTopicsMaxVersion = 0
 	DeleteTopicsMinVersion = 0
 )
-
-func supportVersion(version int16) (version1, version2, version3 bool) {
-	switch version {
-	case 0:
-		break
-	case 1:
-		version1 = true
-		break
-	case 2:
-		version2 = true
-		break
-	case 3:
-		version3 = true
-		break
-	}
-
-	return
-}

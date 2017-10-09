@@ -6,6 +6,9 @@ import (
 	"io"
 	"net"
 
+	"github.com/travisjeffery/jocko/apis/fetch"
+	"github.com/travisjeffery/jocko/apis/replication"
+	"github.com/travisjeffery/jocko/apis/topic"
 	"github.com/travisjeffery/jocko/protocol"
 )
 
@@ -22,8 +25,8 @@ type CommitLog interface {
 
 // Client is used to request other brokers.
 type Client interface {
-	FetchMessages(clientID string, fetchRequest *protocol.FetchRequest) (*protocol.FetchResponses, error)
-	CreateTopic(clientID string, createRequest *protocol.CreateTopicRequest) (*protocol.CreateTopicsResponse, error)
+	FetchMessages(clientID string, fetchRequest *fetch.FetchRequest) (*fetch.FetchResponses, error)
+	CreateTopic(clientID string, createRequest *topic.CreateTopicRequest) (*topic.CreateTopicsResponse, error)
 	// others
 }
 
@@ -175,8 +178,8 @@ type Broker interface {
 	DeleteTopic(topic string) protocol.Error
 	Partition(topic string, id int32) (*Partition, protocol.Error)
 	ClusterMember(brokerID int32) *ClusterMember
-	BecomeLeader(topic string, id int32, command *protocol.PartitionState) protocol.Error
-	BecomeFollower(topic string, id int32, command *protocol.PartitionState) protocol.Error
+	BecomeLeader(topic string, id int32, command *replication.PartitionState) protocol.Error
+	BecomeFollower(topic string, id int32, command *replication.PartitionState) protocol.Error
 	Join(addr ...string) protocol.Error
 	Cluster() []*ClusterMember
 	TopicPartitions(topic string) ([]*Partition, protocol.Error)
